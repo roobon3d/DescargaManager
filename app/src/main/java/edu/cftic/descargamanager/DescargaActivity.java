@@ -42,6 +42,7 @@ public class DescargaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga);
 
+        //Solicitamos el permiso peligroso en tiempo de ejecución y esperamos el resultado en onRequestPermissionsResult
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 700);
     }
 
@@ -75,7 +76,7 @@ public class DescargaActivity extends AppCompatActivity {
     {
         DownloadManager.Request request = null;
 
-        request = new DownloadManager.Request(Uri.parse(url));
+        request = new DownloadManager.Request(Uri.parse(url)); // que quiero descargar
         request.setDescription("Musica ");
         request.setTitle("Itunes muestra mp3 ");
         request.setMimeType("audio/mp3");
@@ -83,6 +84,7 @@ public class DescargaActivity extends AppCompatActivity {
         //request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);//se ve mientras, pero se quita al completarse
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
+        // preparamos el fichero donde queremos que se guarde la copia de la descarga
 
         String ruta_completa_fichero =  Environment.getExternalStorageDirectory().getPath()+"/cancion1.mp3";
         Uri uri_dest = Uri.fromFile(new File(ruta_completa_fichero));
@@ -101,16 +103,17 @@ public class DescargaActivity extends AppCompatActivity {
 
         //opcional, para dibujar una ventana
         dibujarProgressBar();
-        //importante, programo la vuelta "pongo a escuchar el fin de la descarga a mi Receiver"
+
+        //Preparando el RECEIVER - importante, programo la vuelta "pongo a escuchar el fin de la descarga a mi Receiver"
         filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        receiver = new DescargaCompletaPodcastReciver(this);
+        receiver = new DescargaCompletaPodcastReciver(this); // le pasamos el context para que vuelva a mi activity
         this.registerReceiver(receiver, filter);
 
-        //preparo la petición de descarga para que el servicio DownloadManager tenga claro qué quiero descargar y cómo
+        //Preparo la PETICIÓN de descarga para que el servicio DownloadManager tenga claro qué quiero descargar y cómo
         DownloadManager.Request request = prepararPeticionDescarga(url);
 
         DownloadManager manager = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
-        id_descarga = manager.enqueue(request);//hago la petición y me da un id, que la identifica
+        id_descarga = manager.enqueue(request);//hago la petición y me da un id, que la identifica (para usar en el receiver)
         receiver.setId_descarga(id_descarga);//importante para saber que es esa y no otra más tarde, cuando acabe
 
 

@@ -14,6 +14,18 @@ import android.widget.Toast;
 
 
 
+
+/*
+hay que añadir esto al manifest.xml
+ <receiver
+            android:name=".DescargaCompletaPodcastReciver"
+            android:enabled="true"
+            android:exported="true" />
+
+
+ */
+
+
 public class DescargaCompletaPodcastReciver extends BroadcastReceiver {private long id_descarga;
     private Context context;
 
@@ -45,7 +57,7 @@ public class DescargaCompletaPodcastReciver extends BroadcastReceiver {private l
         int ref = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
         int status = cursor.getInt(ref);
 
-        DescargaActivity da = (DescargaActivity)context;
+        DescargaActivity da = (DescargaActivity)this.context;
         switch (status) {
             case DownloadManager.STATUS_SUCCESSFUL:
 
@@ -64,8 +76,8 @@ public class DescargaCompletaPodcastReciver extends BroadcastReceiver {private l
         }
 
         /**
-         * IMPORTANTÍSIMO DEREGISTRAR ESTA CLASE, DESASOCIAÁNDOLA DE LA ACTIIVIDA. sI NO, EN LA SIGUIENTE DESCARGA COMPLETA
-         * ESTA CLASE SERÁ INOCADA 2 VECES, PUDIENDO PRODUCIR INCOSISTENCIAS
+         * IMPORTANTÍSIMO DEREGISTRAR ESTA CLASE CON  context.unregisterReceiver(this);, DESASOCIAÁNDOLA DE LA ACTIVIDAD. SI NO, EN LA SIGUIENTE DESCARGA COMPLETA
+         * ESTA CLASE SERÁ INVOCADA 2 VECES, PUDIENDO PRODUCIR INCOSISTENCIAS
          */
 
         context.unregisterReceiver(this);
